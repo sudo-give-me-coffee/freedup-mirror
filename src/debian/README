@@ -1,0 +1,809 @@
+freeDup for Debian
+----------------------
+
+ FFFFF RRRRR   EEEEE  EEEEE  DDDD   UU UU  PPPPP
+ FF    RR  RR  EE     EE     DD DD  UU UU  PP  PP
+ FFFF  RRRR    EEEEE  EEEEE  DD DD  UU UU  PPPPP
+ FF    RR RR   EE     EE     DD DD  UU UU  PP
+ FF    RR  RR  EEEEE  EEEEE  DDDD    UUU   PP
+
+               allows you to reclaim space on your drives. It's simple.
+Introduction
+- Syntax
+- Download
+- Examples
+- Hints
+- How_it_Works
+- Feedback
+- Preview
+===============================================================================
+Freedup walks through the file trees (directories) you specify.
+When it finds two identical files on the same device, it hard links them
+together.
+In this case two or more files still exist in their respective directories,
+but only one copy of the data is stored on disk; both directory entries point
+to the same data blocks.
+[FREEDUP IN ACTION]
+If both files reside on different devices, then they are symlinked together.
+Please see the Syntax_page for instructions, how to modify the bahaviour of
+freedup.
+
+#####
+#####
+#####     Syntax Of FREEDUP 
+#####
+#####
+
+freedup [options] [<tree> ...]
+        Options are toggle switches. Their final state applies.
+        Later <tree> entries are linked to the earlier ones.
+        Providing no <tree> means to take filenames(!) from stdin.
+        When standard input is used the option -o has no effect.
+        FreeDup_Version_1.5-3_by_AN@freedup.org_©2007-2009.
+        Sha1_Version_1.0.4_by_Allan_Saddi_©2001-2003.
+ 
+ 
+
+#####
+#####
+#####     Option Categories 
+#####
+#####
+
+          File Comparison
+-a        provide compatibility to freedups by William Stearns.[=-gup]
+-d        requires the modification time stamps to be equal.
+-D <sec>  allow the modification time stamps to differ by not more than <sec>
+          seconds.
+-f        requires the path-stripped file names to be equal.
+-g        requires groups to be equal.
+-p        requires file permissions to be equal.
+-P <mask> set permission <mask> to an octal number, which indicates the permissions
+          that need to be identical when comparing files.
+-u        requires users to be equal.
+ 
+           Comparison Style
+-x <style> where style means what kind of containers freedup_should_look_for_before
+           processing, i.e. the calculation of hashsums and comparison.
+           mp3 ignores mp3v1 and mp3v2 tags
+           mp4 ignores all mpeg containers except the first sequence of mdat ones
+           mpc ignores mouse pack trailing tags
+           jpg ignores jpeg header tags (including quantizazion)
+           ogg ignores OggS header and short trailing tags
+           auto selects one of above methods when appropriate
+ 
+           Hash Functions
+-t <type>  selects an external hash method. Valid choices are sha512, sha384,
+           sha256, sha224, sha1, md5, sum . External hash functions are not
+           supported with comparison styles.
+-# <level> with level one of 0, 1, or 2. Controls the way that hash functions are
+           used. Independently all files are compared byte by byte. Default is 2,
+           which results in a fast hash function calculation during byte-by-byte
+           comparision. This needs some more memory and the same or less time than
+           level 0, which does not evaluate any hash values. Level 1 is needed to
+           evaluate hash functions before comparing a pair of files. External hash
+           functions require level 1 (higher levels are lowered automatically). A
+           side effect of level 0 is to disable external hash functions.
+ 
+   Reporting
+-c count file space savings per linked file.
+-h shows this help and the long option names. [other option are ignored]
+-H shows all identical files whether already linked or not. Use it with -n.
+-q produces no output during the run (also toggles -c and -v to off)
+-v display shell commands to perform linking [verbose].
+ 
+   Actions
+-l only allow hardlinks. No symlinks are established.
+-n do not really perform links [no action].
+-s generate symlinks although some given paths are relative.
+-w only weak symbolic links allthough hardlinks might be possible.
+-T when linking, keep the directories' modification and access time.
+-0 disable linking of empty files i.e. files of size 0.
+ 
+      Link Directions
+-     Use key to define link direction, where key is one of ...
+k     @  link all identical files to the one which has already the most links.
+<key> #  link all identical files to the first one that occured on commandline.
+      <  link all identical files to the oldest one in the set.
+      >  link all identical files to the newest one in the set.
+      -  link all to the smallest one when using extra styles (like < otherwise).
+      +  link all to the biggest one when using extra styles (like > otherwise).
+      else  link identical files arbitrarily (to first in unsorted list).
+      You should pay attention on masking these characters like '#' or \#
+ 
+           General Behaviour
+-b <path>  set current working directory to the given path.
+-e <env>   load an environment set, i.e. some stored default settings. If not
+           present, it will be stored. Please note, that the environment setting
+           are loaded at its position in the command line, but stored after all
+           settings were performed. Only the directories from the command line will
+           be stored.
+-i         decide in interactve mode what to do with identical files.
+-m <bytes> only touch larger files. (deprecated: use -o -size +#c)
+-o <opts>  pass one option string to the initially called find command (last given
+           string applies). If not given an interal function is called instead of
+           find.
+<tree>     any directory tree to scan for duplicate files recursively.
+ 
+
+#####
+#####
+#####     Download 
+#####
+#####
+
+    * Past - Present - Future
+    * ChangeLog .txt
+    * Portable_Application_Description_(PAD)
+    * Bugs_and_ToDos .txt
+    * Dedicated To Distributions
+    * Packman_RPMs_for_SuSE_(by_Toni_Graffy)
+    * RPMs_for_RedHat,_CentOS_&amp;_Fedora_(by_Dag_Wieers)
+    * Version 1.6-3
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.5-3
+    * TGZ / BZ2_Archive
+    * Source / CygWin / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.5-2
+    * TGZ / BZ2_Archive
+    * Source / CygWin / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.5-1
+    * TGZ / BZ2_Archive
+    * Source / CygWin / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.4-4
+    * TGZ / BZ2_Archive
+    * Source / CygWin / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.4-3
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.4-2
+    * TGZ / BZ2_Archive
+    * Source / CygWin / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.4-1
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.3-1
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.2-1
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+    * Version 1.1-3
+    * TGZ / BZ2_Archive
+    * Source / i586_RPM_File
+    * i386_debian_pkg / dsc / tar / changes
+Starting with version 1.0-4 the packages on this page are signed.
+If you are using versions not listed here, I strongly recommended to upgrade to
+the current version. Cygwin releases of version 0 do not have a correct working
+comparison engine. Due to this (former) defiences you might want to compare it
+to other programs, i.e. at Wikipedia.org/wiki/freedup.
+
+#####
+#####
+#####     How freedup in principle works 
+#####
+#####
+
+There are neither warranties nor guarantees for freedup working correctly. In
+principle freedup only knows about linking. Therefore the maximum risk is to
+link different files. During development many precautions were taken, but I
+have to emphasize that this risk exists. Only when using interactive mode you
+may delete files in a two step process, too. If you detect any possible source
+of misbehaviour in freedup, please report it for the sake of all users.
+In principle freedup always searches for files of identical size and compares
+them byte-by-byte. The only exception are "extra styles", where the tags
+(details see next chapter) are intentionally skipped. Before files are compared
+byte-by-byte you might apply restrictions, like being owned by the same group
+or user, having the same permission or whatever the options allow you. Files
+that match in content and fulfil all required prerequisites are linked in the
+demanded way.
+   1. Scan all directory trees recursively for all regular files.
+   2. Build a sequential list of those files and keep their name.
+   3. The arg position or pipe input sequence is kept by adding sequence
+      numbers th each file.
+   4. Use lstat() on each file to read and store its size with the filename.
+   5. Sort the file and its attached information by comparing their sizes using
+      qsort().
+   6. In case the comparison has to report equal file size additional
+      properties are compared.
+   7. Most of those property checks are switched off by default.
+   8. If all demands are fullfilled, the files are compared block by block
+      (4k).
+   9. If both files are identical and on the same file system they are added to
+      link list.
+  10. The link list will not be processed before all comparisons are complete.
+  11. After all files are compared freedup starts processing the link list.
+  12. For each link list entry, i.e. a set of identical files, the requested
+      order is prepared.
+  13. In interactive mode the files are now presented to make your file
+      specific choice.
+  14. The files that are intended to be linked, will be renamed, hard linked,
+      renamed file removed.
+  15. If hardlinking is not possible soft links are tried, except one of the
+      paths is not starting at root (but can be forced)
+  16. Finally a short report is delivered.
+For more details please have a look into the source code or ask the author.
+
+#####
+#####
+#####     How freedup "extra styles" work 
+#####
+#####
+
+This concept was introduced in version 1.1 due to the fact that I wanted files
+to be linked although they differed. I am talking of mp3 files where the tags
+showed minor variations. First I considered retagging all files, but I would
+have to remove either all or complete all tags (n.b. MP3v1 tags are at the end,
+MP3v2 tags are at the beginning of an mp3 file, both are optional).
+The extra style now should compare the essential file content, i.e. the mpeg
+encoded sound part in case of the mp3 files. Currently the following rules are
+established:
+    * mp3 strips the mp3v1 and mp3v2 tags and provides comparison of the
+      remaining body.
+    * mp4 strips all sections up to the first mdat section and everything
+      including the first non-mdat section after it. This should work for iPod
+      files, AAC/FAAC encoded sounds, and files usually having extensions like
+      MP4, M4A, M4V, MOV, etc.
+    * mpc strips the the APETAGEX labeled tail from mousepack audio files.
+    * ogg strips all infos until the sequence "vorbis.BCV" where the dot is
+      arbitrary. Minor trailing infos (less than 128 bytes) are also cut off.
+    * jpg tries to strip the comments at the beginning of each file. Since some
+      comments where after the quantization table, this is stripped, too.
+since for each file type exactly one method exists (might change in future), an
+automated mode will call the respective method according to the file magic. The
+name of each file is not considered for type checking.
+Please note, that these styles change the behaviour according to the file
+contents. The change the size of the compared contents, but this does not
+affect the options that belong to the files, like ownerships or file names.
+If you like to contribute, this is quite simple. There are source files for
+each style. Start with a copy of my.c and my.h. Rename the functions, fill in
+your way to evaluate the irrelevant bytes at start and the trailing ones, as
+well as a way to find size and magic. Add a matching line to the extra[] table
+in auto.c, compile, test and submit to me.
+
+#####
+#####
+#####     Why freedup does not use hash functions by default 
+#####
+#####
+
+Hash functions should speed up freedup since they avoid comparing files that
+have been scanned before (and might differ in the last characters). But freedup
+is slowed down, if files of the same size differ early. Then you should switch
+the hash function off, which is now the default. If most files of the same size
+are likely to be identical (more then just two), it probably pays to switch
+hash functions on. There is an internal hash function that allows some
+interesting speed enhancements (see below). External hash functions are kept,
+since they might be interesting to check the internal one for correctness.
+The new algorithm records hash sums on the fly (starting in version 1.3-1) and
+is in worst case - depending on cpu - half as fast as without using hash
+functions. When reading files the hash function is calculated until the
+comparison fails. The hash context is stored until the next comparison takes
+place and if it fails at a later block, the hash calculation will be continued
+where it stopped earlier. Since reading and comparing files works with data
+blocks (predefined 4k) the hash values can sometimes be calculated although the
+comparison fails.
+time ./freedup -x mp3 --hash ? -ni /testdir
+7856 files; 1 match; average file size 46MB; 50% smaller 4k; 2900 BogoMIPS
+2852 classic hash sums to avoid 3411 byte-by-byte comparisons.
+hash support         Parameter Real Time User Time Sys Time
+without hash support --hash 0  2m04.646s 0m00.599s               0m03.455s
+with classic hashsum --hash 1  5m31.221s 2m21.914s               0m16.303s
+with advanced hash   --hash 2  1m59.720s 0m06.006s               0m03.515s
+time ./freedup --hash ? -n /mp3dir
+7919 files; 0 matches; all around average file size 4.5MB; 1400 BogoMIPS
+4502 classic hash sums to avoid 3819 byte-by-byte comparisons.
+hash support         Parameter Real Time  User Time  Sys Time
+without hash support --hash 0   5m21.690s  0m15.130s           0m25.560s
+with classic hashsum --hash 1  45m14.048s 36m33.470s           2m29.380s
+with advanced hash   --hash 2  10m01.311s  6m28.610s           0m28.150s
+time ./freedup --hash ? -x mp3 -n /mp3dir
+7919 files; 456 duplicates; all around average file size 4.5MB; 1400
+BogoMIPS
+4524 classic hash sums to avoid 3425 byte-by-byte comparisons.
+hash support         Parameter Real Time  User Time  Sys Time
+without hash support --hash 0   6m48.276s  0m18.590s       0m28.600s
+with classic hashsum --hash 1  49m35.108s 37m06.450s       2m47.400s
+with advanced hash   --hash 2  12m33.688s  6m51.530s       0m31.090s
+As a consequence of these results, the advantage of hash functions is not
+obvious for most environments. I assume that there are situations, where many
+files have the same size and quite similar contents. Then one should switch
+hash function usage to the advanced mode. But since I do not intend to rely on
+hash results without having byte-by-byte comparison, I changed the default
+value since freedup 1.3-2 to off.
+
+#####
+#####
+#####     Examples 
+#####
+#####
+
+
+*****
+*****  An Example using FREEDUP in native mode: 
+*****
+
+SYSTEM1:root# freedup -cf /home/freedup/holidays/2006/family /home/freedup/
+holidays/2006/friends
+Run through both trees .../family and .../friends, compare the files
+(selections of my holiday snapshots) and link those files, that have identical
+names and contents. The option -c counts how much space is saved by linking.
+
+*****
+*****  An Example to remove duplicate MP3 files: 
+*****
+
+MP3 files usually contain a tag (indeed there are two different tags that may
+coexist at the beginning and at the end of the file) that contains more
+information than the pathname. MP3 files are also copied frequently (for legal
+reasons) like having it on a MP3 CD for the car, on the stick that is used for
+jogging or for simple rearrangements from one computer to another. With each
+further action it starts getting more complicate to know, whether it is a old
+version or a new one in higher quality (hard disks are getting cheaper). In
+order to make the situation worse, I tend to correct wrong titles or misspelled
+Artist names. (Do you know how many 'r', 's', 't' and 'n's are in the artists
+name who sings "Ironic"?)
+I think the motivation should be clear by now. How looks the solution like? My
+solution is to use FreeDup and its extended style enhancements. Here is the
+syntax to find out, whether it is a good idea to link files and one should
+check it manually:
+MP3SYSTEM:root# freedup -inq -x mp3 /music /burn
+/music/Alanis_Morissette/Ironic.mp3
+/music/HiFi/Alanis_Morissette/Ironic.mp3
+/burn/CD/Females/Alanis_Morissette/Ironic.mp3
+/burn/CD/CarMix1/Alanis_Morissette/Ironic.mp3
+/burn/Stick/Blue/Alanis_Morissette/Ironic.mp3
+
+[...]
+Due to the amount of files to link I tend to link them automatically, by
+omitting -in or replacing it with -c. In case I want to to decide the linking
+direction case by case I only omit -n.
+MP3SYSTEM:root# freedup -i -x mp3 /music /burn
+Extra Style comparisons are not thouroughly tested yet.
+You may loose header information, if you press .
+Use CTRL-C to stop.
+I was used to use CTRL-D to bypass this message. But you should update to a new
+version.
+4052 files to investigate
+
+Del:Lnk [filesize:devc:i-node:perm:L:tag] <filename>
+ 0 : A [    81920:0303:00a8c0:0644:1:  ] /music/Alanis_Morissette/Ironic.mp3
+ 1 : B [    86016:0303:00a8e7:0644:1: 2] /music/HiFi/Alanis_Morissette/
+Ironic.mp3
+ 2 : C [    86018:0303:00a8e0:0644:1: 2] /burn/CD/CarMix1/Alanis_Morissette/
+Ironic.mp3
+ 3 : D [    86144:0303:00a8bb:0644:1:12] /burn/CD/Females/Alanis_Morissette/
+Ironic.mp3
+ 4 : E [    86144:0303:00a8c1:0644:1:12] /burn/Stick/Blue/Alanis_Morissette/
+Ironic.mp3
+Delete on number, Link on letter, Symlink on Capital (first is source)
+ to confirm.  to clear. All links will point to <a>.
+$ ln <e> <b>; ln <e> <a>; rm <3>; rm <2>;
+[...]
+When I get the first selection I type 'e', 'b','a','3','2'. When I press
+return, the commands will be executed. It is easy to erase the command list by
+typing the escape key. If your decision rules are simple you may use
+'@','<','>' to link all other files to the first (from command line or standard
+input), to the oldest or the newest file. But I use CTRL-C to try different
+options.
+MP3SYSTEM:root# freedup -i /music /burn
+If I now start FreeDup without the extra style option, not all identical mp3
+codings would have been found, since most files differ (compare sizes). The
+resulting list is much shorter. Since they are all identical, the size and the
+tag info (FreeDup does not look for tags then) is not shown.
+4052 files to investigate
+
+Del:Lnk [dev:i-node:perm:L]
+ 0 : A [0303:00a8bb:0644:1] /burn/CD/Females/Alanis_Morissette/Ironic.mp3
+ 1 : B [0303:00a8c1:0644:1] /burn/Stick/Blue/Alanis_Morissette/Ironic.mp3
+Delete on number, Link on letter, Symlink on Capital (first is source)
+ to confirm.  to clear. All links will point to <a>.
+$ ln <b> <a>;
+[...]
+
+*****
+*****  An Example using LOCATE: 
+*****
+
+The intention is to see, what FreeDup would do on all registered JPEGs on
+SYSTEM1. We do run the command as root, just to see all allowed links.
+SYSTEM1:root# locate '*.jpg' | freedup -nv
+lstat() failed while reading file statistics: No such file or directory
+lstat() failed while reading file statistics: No such file or directory
+...
+lstat() failed while reading file statistics: No such file or directory
+lstat() failed while reading file statistics: No such file or directory
+1085 files to investigate
+
+ln "/opt/kde3/share/apps/pixie/doc/en/pixielogo.jpg" "/opt/kde3/share/apps/
+pixie/pixielogo.jpg"
+ln "/opt/kde3/share/apps/quanta/templates/binaries/images/jpg/demo.jpg" "/opt/
+kde3/share/apps/quanta/templates/images/jpg/demo.jpg"
+ln "/usr/lib/webmin/mscstyle3/images/cats/net.jpg" "/usr/lib/webmin/mscstyle3/
+images/cats_over/net.jpg"
+ln "/usr/lib/webmin/mscstyle3/images/cats/webmin.jpg" "/usr/lib/webmin/
+mscstyle3/images/cats_over/webmin.jpg"
+ln "/usr/share/games/freedroid/graphics/transfer.jpg" "/usr/src/packages/BUILD/
+freedroid-0.8.4/graphics/transfer.jpg"
+ln "/usr/share/doc/packages/id3lib-devel/attilas_id3logo.jpg" "/usr/src/
+packages/BUILD/audacity-src-1.0.0/id3lib/doc/attilas_id3logo.jpg"
+ln "/usr/share/doc/packages/mgp/sample/mgp3.jpg" "/usr/X11R6/lib/X11/mgp/
+mgp3.jpg"
+ln "/usr/share/doc/packages/mgp/sample/mgp2.jpg" "/usr/X11R6/lib/X11/mgp/
+mgp2.jpg"
+ln "/usr/share/doc/packages/mgp/sample/mgp1.jpg" "/usr/X11R6/lib/X11/mgp/
+mgp1.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/caida_bw/1280.jpg" "/usr/X11R6/lib/
+X11/xglobe/caida_bw_1280.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/caida/1280.jpg" "/usr/X11R6/lib/X11/
+xglobe/caida_1280.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/alt/1200.jpg" "/usr/X11R6/lib/X11/
+xglobe/alt_1200.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/bio/1600.jpg" "/usr/X11R6/lib/X11/
+xglobe/bio_1600.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/depths/1440.jpg" "/usr/X11R6/lib/X11/
+xglobe/depths_1440.jpg"
+ln "/opt/kde3/share/apps/kworldclock/maps/mggd/1440.jpg" "/usr/X11R6/lib/X11/
+xglobe/mggd_1440.jpg"
+15 files of 1085 will be replaced by links.
+The total size of replacable files is 1506387 bytes.
+md5 hash algorithm had to read 86 files to avoid 31 file comparisons.
+Initially failed lstat() executions show, that the locate database was not
+updated since the last JPEG removals. The stats of 1085 files have been read
+and compared after that. 15 files turned out to match 15 others. Most of them
+seem having been transfered by install commands. The amount of saved space is
+about 1.5MB. Using the md5 hashing was not a good idea in this case. Instead of
+reading and evaluating a hash sum it would have been easier to read 62 files
+for direct comparison.
+Please be aware, that the displayed commands cannot be piped into a file and
+executed later. You need to remove the target first or use ln -f, before you
+link it. Otherwise you will receive "file exists". Later versions of FreeDup
+show option -f by default.
+
+*****
+*****  An Example using FIND: 
+*****
+
+SYSTEM1:root#  find /usr/src/linux -type f -xdev -atime +12 | freedup -nv
+SYSTEM1:/home/freedup # find /usr/src/linux -type f -xdev -atime +12 | freedup
+-c
+Taking file names from stdin
+
+0 files to investigate
+
+0 files of 0 replaced by links.
+The total size of replaced files was 0 bytes.
+md5 hash algorithm had to read 0 files to avoid 0 file comparisons.
+The starting tree is not a tree but a symbolic link. You need to append a slash
+to descend into the referenced directory. This trick only works for the
+starting tree.
+SYSTEM1:/home/freedup # find /usr/src/linux/ -type f -xdev -atime +12 | time
+freedup -c
+Taking file names from stdin
+
+1045 files to investigate
+
+0 files of 1045 replaced by links.
+The total size of replaced files was 0 bytes.
+md5 hash algorithm had to read 0 files to avoid 0 file comparisons.
+0.00user 0.01system 0:00.29elapsed 6%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+1310minor)pagefaults 0swaps
+You see, that I tried FreeDup already before. No file that was not touched for
+12 days did match another. -xdev was used to confine the find command to the
+local directory. The prefix command time was used to show some not very
+interesting performance statistics. Another way to write it down is
+SYSTEM1:/home/freedup # freedup -c /usr/src/linux/ -o "-xdev -atime +12"
+The option passing really pays if you need to scan a number of trees. Just
+compare yourself:
+SYSTEM1:/home/freedup # freedup -c /usr/src/linux-2.6.12.1 /usr/src/linux-
+2.6.21.1 -o "-xdev -atime +12"
+versus
+SYSTEM1:/home/freedup # ( find /usr/src/linux-2.6.12.1 -type f -xdev -atime +12
+; find /usr/src/linux-2.6.21.1 -type f -xdev -atime +12 ) | time freedup -c
+Please note, that I omitted (incorrectly) the find default action -print.
+
+*****
+*****  List identical files in groups 
+*****
+
+SYSTEM1:/home/freedup/fdupes-1.40 # freedup -in testdir/
+14 files to investigate
+
+testdir/two
+testdir/twice_one
+testdir/recursed_a/two
+
+testdir/recursed_a/one
+testdir/recursed_b/one
+
+testdir/recursed_b/three
+testdir/recursed_b/two_plus_one
+
+testdir/zero_a
+testdir/zero_b
+
+testdir/with spaces a
+testdir/with spaces b
+
+*****
+*****  Directories to use FreeDup for: 
+*****
+
+    * Several versions of software contain identical files, e.g. linux kernel.
+    * The backup side or rsnapshot. FreeDup speeds things up.
+    * You have multiple copies of the file COPYING in /usr/doc or /usr/share/
+      DOC
+    * Depending on your system, the following might be good places
+      to try linking (size in parentheses are my SuSE 9.2 savings):
+      freedup /usr/src/linux-2.6.10 /usr/src/ 20/68329            (9k)
+      linux-2.6.11
+      freedup /usr/src/linux-2.6.1*           930/207000          (1.52MB)
+      freedup /usr/share                      37/163335           (2.6MB)
+      freedup /usr/lib                        22/41368            (97kB)
+      freedup /usr/src/packages/BUILD         3030/108427         (17.5MB)
+      freedup /usr/man /usr/share/man         14/10772            (19kB)
+      freedup /usr/share/locale /etc/locale   36/1436 files       (29kB)
+      Warwick_Pooles_Personal_Files           26% space reduction
+    * Directories holding multimedia files are good candidates.
+
+#####
+#####
+#####     Hints on what FreeDup (seems to) lack 
+#####
+#####
+
+   1. Excess Mode
+      Duff provides an "excess mode" that shows clusters of identical files
+      where exactly one is missing. The intention is to remove all duplicates
+      and keep the one that is not shown. The man page of duff suggests to use:
+      duff -er . | xargs rm
+      In case you want to do the same with FreeDup, your line should read
+      freedup -in . | awk '{if(NF!=0)print x;x=$0}' | xargs rm
+      Please be aware that two such concurrently active jobs might delete
+      files, since qsort() of the OS does not provide a kind of sorting that
+      guarantees to keep two identical files in their original order.
+
+   2. Convert Symbolic Links To Real Files
+      Duff also provides a "reverse mode" that converts symbolically linked
+      files back to plain files, which are not linked to their original source.
+      If this is generally desired you may want to use:
+      find test -type l -exec cp {} {}.tmp$$ \; -exec mv {}.tmp$$ {} \;
+
+   3. Convert Symbolic Links To Hard Links
+      If you wish to replace symbolic links by hard links, I may provide you
+      two alternatives. One is using a shell script soft2hard The other uses my
+      own_C_code of a command symharden, which accepts a single symbolic link
+      that will be replaced by a hard link if possible. It will fail with non-
+      zero return code in all other cases. Please be aware that the usual
+      restriction for links apply, i.e. no cross-device links. Use this line to
+      do it for a full tree:
+      find test -type l -exec symharden {} \;
+
+   4. Hard-Linking directories
+      some operating systems support linking of directories on some file
+      systems with the link (not possible with ln) command. Since the testing
+      environment does not provide such functionality, there is no option for
+      it. On the other hand, it would probably not significantly change the
+      file system size.
+
+   5. Exclude Directories
+      FreeDup does not really provide to exclude directories by full or partial
+      path name. But since you may prepare any file list, you are able to do
+      this as well. For me mostly two situations apply:
+          o Sometimes I do not want to include all filesystems within a file
+            tree.
+            freedup -o '-xdev' test  test/mount
+          o If there is no specific mountpoint that I would want to exclude,
+            but a directory name, then it works well this way.
+            find test -print | grep -v '/invalid_dir/' | freedup
+      You may easily think of other solutions following this patterns.
+
+   6. Directory Modification Times
+      When linking files it is unavoidable to change the modification and the
+      access time of the directory the target belongs to. Carsten Schmidt
+      reported me a case where this leads to additional (unwanted) actions. Use
+      the -T option to make FreeDup keeping the modification times of the
+      directories. Since FreeDup avoids locking, there is a little chance for
+      another process to modify the directory while the access date is
+      (mis)corrected.
+      NB: The full time stamp of the linked file is the one of the link source.
+      After linking any modification would affect link source and target.
+
+   7. Removing empty files or directories
+      With Linux this a simple command line would do it for directories:
+      find ./ -type d -empty -print0 | xargs -0 rmdir
+      and another one for empty files
+      find ./ -type f -empty -print0 | xargs -0 rm
+      Both lines allow to use line feeds within the file names, since they use
+      zero limited strings (This hint is from the readme of dupmerge).
+      With a non GNU-like OS this command line would do it for directories:
+      find ./ -type d -size 0c -print | xargs rmdir
+      and a similar one for empty files:
+      find ./ -type f -size 0c -print | xargs rm
+
+   8. Finding Linked files with Windows
+      Kurt pointed out how hard it can be to find linked files within Windows
+      (compare: junction systeminternals). He suggests this command using
+      cygwin:
+      find . -type f -noleaf -links +1 -printf "%n %i %f\t%h\n" | sort | less
+
+
+#####
+#####
+#####     Hints on (previous) strange behaviour of FreeDup 
+#####
+#####
+
+
+*****
+*****  Quality Verification 
+*****
+
+Starting with version 1.0-5 the binary installation provides a file called
+verify. This is partially identical to the testing routines of the source
+package. Please be aware, that you have to be root to be successful with all
+tasks since there are test files given to other users (bin.bin, except for
+cygwin: ASPNET.SYSTEM). In version 1.0-5 there is also a good chance that the
+intercative test fails, when the sorting order (which was not defined!) differs
+from my development system.
+
+*****
+*****  Hash Evaluation 
+*****
+
+The versions before 1.0-4 do not support an internal hash sum calculation.
+External hash programs give you the disadvantage of speed loss, since the hash
+sums are calculated separately (use -# to switch hashsums off). The advantage
+is, that you may use nearly every external program that generates hash sums.
+You have to set the paths at compile time or move/link the executables to where
+they are expected.
+The use of external programs may cause strange effects, if they do not work as
+expected. This was the reason why the cygwin versions before 1.0-3 all had no
+hash support. Version 1.0-3 does no strict testing, but checks that the output
+format matches the format that FreeDup needs. On my development system (SuSE
+Linux 10) the output to sha1sum freedup reads
+284abef5f109e88d8e997a8756c6fe396dade795  freedup
+while it reads under cygwin
+284abef5f109e88d8e997a8756c6fe396dade795 *freedup
+Freedup expects a 40 byte hash sum for sha1sum and 32 alphanumeric bytes for
+md5sum. The use of the 16 bytes output from sum is not really considered
+helpful, but provided as fallback. The spaces (for cygwin the second is an
+asterisk) after the hash code are checked to be there (details are in the
+definition around the hashme[] within the source). If not, it is assumed that
+the hash methods quite certainly provide misleading results. Therefore they are
+disabled automatically. Prior to version 1.1 you see output like this if the
+output format does not match:
+$ freedup /home/peter/
+md5: format does not match ('/' instead of ' ')
+sum: format does not match ('i' instead of ' ')
+No working hashmethod found.
+--> Use of hash methods is disabled.
+[...]
+Starting with version_1.0-4,_FreeDup provides an internal hash method as
+default and fallback method, but allows a free choice between an internal and
+the external hash methods.
+
+#####
+#####
+#####     Questions 
+#####
+#####
+
+The Frequently Asked Ones are not on this page, since there is an excellent FAQ
+section
+on William Stearns freedups page http://www.stearns.org/freedups/README
+Please note, that freedup is a completely independant implementation, with
+other means and other capabilities.
+The Main difference is the ability of freedup to provide symlinks from
+different file systems.
+And here are my questions.
+How_do_you_like_the_performance_of_freedup?
+Are_the_provided_packages_what_you_want?
+What_about_the_documentation._Is_it_sufficient?
+Please provide me some feedback here or per mail.
+
+#####
+#####
+#####     Users Comments 
+#####
+#####
+
+Wiki:_Howto_use_Freedup_to_improve_rsnapshop.
+A_discussion_on_FreeDup_in_conjunction_with_rsnapshot.
+Verschiedene_Meinungen_zu_Freedup_und_Alternativen_in_Deutsch.
+Frühjahrs-/Winter-Putz_im_RadioTux-Blog
+Japanese_Selection_of_hot_linux_tools
+Japanese_Comment_on_Aikawa.TV
+Miroslav_Suchy_resports_on_root.cz.
+However, I hope the Japanese and Czech comments are positive. I am fortunate to
+tell, there are currently no unresolved bug reports.
+
+#####
+#####
+#####     Co-Publishing 
+#####
+#####
+
+On FreshMeat.Net by myself immediately after completed upload to these pages.
+On IceWalkers a bit delayed by myself and others.
+On Softpedia by somebody else.
+There are also several download pages referenced, that supply the codes for
+various releases.
+
+#####
+#####
+#####     Contacts and Credits 
+#####
+#####
+
+Please send comments, suggestions, bug reports, patches, and/or additions to
+AN@freedup.org .
+A_lot_of_different_web_sites_were_helpful. I used William Stearns freedups for
+many years quite successfully until I lacked some features, which freedup
+fixes.
+Thanks for compiling and publishing to Tony_Graffy_on_SuSE_RPMs_at_packmans and
+Dag_Wieers_on_RedHat,_CentOS_and_Fedora_RPMs_at_his_own_site.
+Thanks to Tomasz_Muras_with_his_Perfect_Match for being a fair competitor.
+Thanks to Thorsten_Leemhuis_and_c't_(24/2007)_on_writing_and_publishing
+"Auswahl_satt", which is a German article about "System-Utlities für Linux",
+which covers these topics: file managers, sorting & finding, and archiving
+files. Freedup was his choice to find and link duplicate files.
+Thanks to Michael_Riepe_and_iX_(11/2007)_on_writing_and_publishing
+"Entdoppeltes_Lottchen", which is a German article about "Dateien mit gleichem
+Inhalt finden und beseitigen". He spent one third of the article on freedup
+(counting paragraphs).
+My thanks to all the individuals who were asking me for certain improvements or
+corrections. This raised the usability of Freedup and therefore helped them,
+others and me. [I do not publish names of communication partners using private
+mail, except being explicitely authorized.]
+
+#####
+#####
+#####     Donations 
+#####
+#####
+
+This software is for free of charge. On the other hand there also no liability
+for whatsoever.
+Just_in_case_you_feel_obliged_to_provide_me_some_return_and_you_are_not
+contributing_in_other_ways_to_the_software_community,_I_kindly_ask_you_to_visit
+my_advertisment_section._If_you_intend_to_buy_one_of_the_offerings_there,_I
+will_receive_some_bonus.
+        FREE DUP        allows you to reclaim space on your drives. [Do It Now.]
+========================================================================================================
+    Action : #show only   #link hard when possible symbolic otherwise   oonly link hard   oonly link
+             symbolic  
+      Link : #Arbitrary   oto first   oto most linked   oto oldest   oto newest   oto biggest   oto
+ Direction   smallest  
+     Extra : #Off   oAuto   oMP3   oMP4   oMPC   oOgg   oJPG  
+     Style
+========================================================================================================
+ Directory : [/data                                                                   ]
+         1
+ Directory : [/2                                                                      ]
+         2
+ Directory : [/3                                                                      ]
+         3
+========================================================================================================
+File &amp; : ⁰ user needs to be identical     ⁰ group needs to be identical     ⁰ file name needs to be
+     Owner   identical    
+Permission : ⁰ needs to be identical    whereever this octal mask [07777] is nonzero.
+    Modif. : ⁰ needs to be identical    or it differ by a maximum of [timediff] seconds. ⁰ keep
+      Time   directory time stamp.
+     Other : ⁰ show already linked files too   ⁰ do not link empty files  
+========================================================================================================
+  Work Dir : [/audio                                                                  ]
+      Hash : #None   oOptimized   oBuilt-In   omd5   osha1   osha224   osha256   osha384   osha512  
+   Support
+========================================================================================================

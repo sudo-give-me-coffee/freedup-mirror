@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XML_DIZ_INFO>
+	<MASTER_PAD_1.6-3_INFO>
+		<MASTER_PAD_1.6-3>2.011</MASTER_PAD_VERSION>
+		<MASTER_PAD_EDITOR>PAD Generator</MASTER_PAD_EDITOR>
+		<MASTER_PAD_INFO>Portable Application Description, or PAD for short, is a data set that is used by shareware authors to disseminate information to anyone interested in their software products. To find out more go to http://www.asp-shareware.org/pad</MASTER_PAD_INFO>
+	</MASTER_PAD_1.6-3_INFO>
+	<Company_Info>
+		<Company_Name>FreeDup.Org</Company_Name>
+		<City_Town>Darmstadt</City_Town>
+		<State_Province>Hessia</State_Province>
+		<Zip_Postal_Code>D64293</Zip_Postal_Code>
+		<Country>Germany</Country>
+		<Company_WebSite_URL>http://www.FreeDup.Org</Company_WebSite_URL>
+		<Contact_Info>
+			<Author_First_Name>AN</Author_First_Name>
+			<Author_Last_Name>AN</Author_Last_Name>
+			<Author_Email>AN@FreeDup.Org</Author_Email>
+			<Contact_First_Name>AN</Contact_First_Name>
+			<Contact_Last_Name>AN</Contact_Last_Name>
+			<Contact_Email>AN@FreeDup.Org</Contact_Email>
+		</Contact_Info>
+		<Support_Info>
+			<Sales_Email>AN@FreeDup.Org</Sales_Email>
+			<Support_Email>AN@FreeDup.Org</Support_Email>
+			<General_Email>AN@FreeDup.Org</General_Email>
+			<Fax_Phone>+491212612638737</Fax_Phone>
+		</Support_Info>
+	</Company_Info>
+	<Program_Info>
+		<Program_Name>FreeDup</Program_Name>
+		<Program_Version>1.6-3</Program_Version>
+		<Program_Release_Month>03</Program_Release_Month>
+		<Program_Release_Day>05</Program_Release_Day>
+		<Program_Release_Year>2014</Program_Release_Year>
+		<Program_Type>Freeware</Program_Type>
+		<Program_Release_Status>Minor Update</Program_Release_Status>
+		<Program_Install_Support>Install and Uninstall</Program_Install_Support>
+		<Program_OS_Support>WinXP,Windows2003,Unix,Linux,Linux Console,Linux GPL,Linux Open Source,MAC 68k,Mac PPC,Mac OS X,Mac Other</Program_OS_Support>
+		<Program_Language>English</Program_Language>
+		<Program_Change_Info>http://www.FreeDup.Org/ChangeLog</Program_Change_Info>
+		<Program_Specific_Category>Utilities</Program_Specific_Category>
+		<Program_Category_Class>System Utilities::File &amp; Disk Management</Program_Category_Class>
+		<Program_Categories />
+		<Program_System_Requirements>Cygwin for Windows</Program_System_Requirements>
+		<Includes_JAVA_VM>N</Includes_JAVA_VM>
+		<Includes_VB_Runtime>N</Includes_VB_Runtime>
+		<Includes_DirectX>N</Includes_DirectX>
+		<File_Info>
+			<Filename_Versioned>FreeDup-1.6-3-src.tar.bz2</Filename_Versioned>
+			<Filename_Previous>FreeDup-1.5-2-src.tar.bz2</Filename_Previous>
+			<Filename_Generic>FreeDup</Filename_Generic>
+			<Filename_Long>http://www.FreeDup.Org/FreeDup-1.6-3.i586.rpm</Filename_Long>
+			<File_Size_Bytes></File_Size_Bytes>
+			<File_Size_K></File_Size_K>
+			<File_Size_MB></File_Size_MB>
+		</File_Info>
+		<Expire_Info>
+			<Has_Expire_Info>N</Has_Expire_Info>
+			<Expire_Count />
+			<Expire_Based_On />
+			<Expire_Other_Info />
+			<Expire_Month />
+			<Expire_Day />
+			<Expire_Year />
+		</Expire_Info>
+	</Program_Info>
+	<Program_Descriptions>
+		<English>
+			<Keywords>finds eliminates linking interactive duplicate identical files tags </Keywords>
+			<Char_Desc_45>Freedup finds and links duplicate files.</Char_Desc_45>
+			<Char_Desc_80>Freedup finds duplicate files. It links them even across file system, if needed.</Char_Desc_80>
+			<Char_Desc_250>Freedup finds duplicate files. It can eliminate them by linking within or across file systems. Options allow different methods of file comparison, audio tag handling, linking behavior, and reporting style. An interactive mode is available, too.</Char_Desc_250>
+			<Char_Desc_450>Freedup finds and eliminates duplicate files by linking them, and thus reduces the amount of used disk space within one or more file systems. Hardlinks are used on a single device, symbolic links when the devices differ. Options allow you to modify the methods of file comparison, the hash functions, the linking behavior, and the reporting style. Freedup supports to ignore tags, when comparing audio files. An interactive mode is available, too.</Char_Desc_450>
+			<Char_Desc_500>Freedup finds and eliminates duplicate files by linking them, and thus reduces the amount of used disk space within one or more file systems. By default, hardlinks are used on a single device, symbolic links when the devices differ. A set of options allows you to modify the methods of file comparison, the hash functions, the linking behavior, and the reporting style. You may use batch or interactive mode. Freedup usually only considers identical files, but when comparing audio or graphics files, you may elect to ignore the tags.</Char_Desc_500>
+			<Char_Desc_2000>Freedup finds and eliminates duplicate files by linking them, and thus reduces the amount of used disk space within one or more file systems. By default, hardlinks are used on a single device, symbolic links when the devices differ. A set of options allows you to modify the methods of file comparison, the hash functions, the linking behavior, and the reporting style. You may use batch or interactive mode. Freedup usually only considers identical files, but when comparing audio or graphics files, you may elect to ignore the tags. </Char_Desc_2000>
+		</English>
+	</Program_Descriptions>
+	<Web_Info>
+		<Application_URLs>
+			<Application_Info_URL>http://FreeDup.org/</Application_Info_URL>
+			<Application_Order_URL>http://FreeDup.org/</Application_Order_URL>
+			<Application_Screenshot_URL>http://FreeDup.org/preview0.gif</Application_Screenshot_URL>
+			<Application_Icon_URL />
+			<Application_XML_File_URL>http://FreeDup.org/pad.xml</Application_XML_File_URL>
+		</Application_URLs>
+		<Download_URLs>
+			<Primary_Download_URL>http://FreeDup.org/FreeDup-1.6-3-src.tar.bz2</Primary_Download_URL>
+			<Secondary_Download_URL>http://FreeDup.org/FreeDup-1.6-3-src.tgz</Secondary_Download_URL>
+			<Additional_Download_URL_1>http://dag.wieers.com/rpm/packages/FreeDup/</Additional_Download_URL_1>
+			<Additional_Download_URL_2>http://packman.links2linux.org/package/FreeDup</Additional_Download_URL_2>
+		</Download_URLs>
+	</Web_Info>
+	<Permissions>
+		<Distribution_Permissions>GPL</Distribution_Permissions>
+		<EULA>GPL</EULA>
+	</Permissions>
+</XML_DIZ_INFO>

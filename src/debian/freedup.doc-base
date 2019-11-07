@@ -1,0 +1,12 @@
+Document: FreeDup
+Title: Debian FreeDup Manual
+Author: AN <AN@FreeDup.org>
+Abstract: FreeDup reduces disk usage by linking duplicate files while being able to ignore tags
+ Freedup finds and eliminates duplicate files by linking them (aka deduplication), and thus reduces the amount of used disk space within one or more file systems. By default, hardlinks are used on a single device, symbolic links when the devices differ. A set of options allows you to modify the methods of file comparison, the hash functions, the linking behavior, and the reporting style. You may use batch or interactive mode. Freedup usually only considers identical files, but when comparing audio or graphics files, you may elect to ignore the tags.
+Section: utils
+
+Format: text
+Files: /usr/share/doc/freedup/README.gz
+
+Format: HTML
+Files: /usr/share/doc/freedup/README.html

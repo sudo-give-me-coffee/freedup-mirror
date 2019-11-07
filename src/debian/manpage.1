@@ -1,0 +1,254 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" (C) Copyright 2014 root <AN@freedup.org>,
+.\"
+.\" This file is part of FreeDup.
+.\" 
+.\"     FreeDup -- search for duplicate files in one or more directory hierarchies
+.\"     Copyright (C) 2007,2008 Andreas Neuper
+.\" 
+.\"     FreeDup is free software: you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation, either version 3 of the License, or
+.\"     (at your option) any later version.
+.\"
+.\"     FreeDup is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
+.\" 
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+.\" 
+.TH FreeDup "1" "September 2008" "freedup (utils)" "User Commands"
+.SH NAME
+freedup \- find duplicate files and establishes links between them while ignoring selectable tags
+.SH SYNOPSIS
+.B FreeDup
+.RI [ OPTIONS ] [ ITREE ]...
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+Search all given file system trees for identical files and link them to the most frequently referenced inode or if equally referenced to the inode of the first file tree. If the devices differ a symbolic link is used instead of a hard link. Symbolic links will not replace files, when at least one of the directory trees is not starting with a '/'.
+.TP
+\fB\-a\fR
+equivalent to \fB\-gup\fR. It is provided to allow simple compatibility to freedups by William Stearns, where \fB\-a\fR has the opposite meaning of \fb\-n\fR for freedup.
+.TP
+\fB\-b\fR
+Set the base directory, which is the current directory by default. Usually of interest when using freedup in scripts together with partial directory path names.
+.TP
+\fB\-c\fR
+count file space savings per file. A message denotes the number of saved files.
+.TP
+\fB\-d\fR
+requires the modification time stamps to be equal. Most frequently of interest for source files in combination with make. When used a second time (toggled to off) arbitrary time stamps are allowed.
+.TP
+\fB\-D\fR \fB<sec>\fR
+requires the modification time stamps to be within the given range of seconds. Use \fB-d\fR to switch it off.
+.TP
+\fB\-e\fR \fB<env>\fR
+reads a setup environment from the config file \fB$HOME/.freedup.cfg\fR and presets the variables to the values for that environment. If there is no such environment registered, the variables are stored before execution.
+The directories are NOT stored. If you want to add them, d it manually as \fBdirectory=<tree>\fR and pay attention not to provide unneeded trailing spaces.
+.TP
+\fB\-f\fR
+requires the path-stripped file names to be equal. No real use for this except for paranoia and testing reasons.
+.TP
+\fB\-g\fR
+requires groups of the files to be equal for linking. (see \fB-p\fR)
+.TP
+\fB\-h\fR
+shows this help. All other option are ignored then.
+.TP
+\fB\-H\fR
+Normally, when two or more files point to the same disk area they are not treated as duplicates and therefore not reported; this option will change this behaviour. Use it as in \fBfdupes -rH\fR.
+.TP
+\fB\-i\fR
+activate interactive mode. You are prompted to decide on each file, whether to delete or to link it. The list of files contains a number and a letter to reference each file. The number may be used to delete a file. Entering the corresponding letter invokes it to be linked to the file referenced by the first given letter. The special characters '#', '@', '<', '>', '-', and '+' suggest linking all files to the first given, the first with the most links, the oldest, the newest, the smallest, or the biggest respectively. The smallest and biggest reflect different sizes when using extra styles, otherwise they default to oldest and newest. In this case hardlinks on the same device and symbolic links for different devices are suggested. In order to ease your decisions the file names are also preceeded by colon separated device number, inode, permissions, and the link counter in square brackets. The interactive mode may be a replacement for \fBfdupes -rd\fR. The options \fb-in\fR make freedup to behave like \fBfdupes -r\fR.
+.TP
+\fB\-k\fR \fB<key>\fR
+sets the linking order, i.e. which file will replace the others. Depending on your options the may have influence on timestamps, permissions, ownership, and in case of more than two identical files als which files are treated as linked and which are not. Allowed keys are the special characters from interactive mode.
+.TP
+\fB\-l\fR
+Establish only those links that are hardlinks, do nothing if symlinks are required, e.g. caused by different file systems. Makes \fIfreedup\fR do nothing in combination with \fB\-w\fR.
+.TP
+\fB\-m\fR \fB<bytes>\fR
+deprecated: only link files larger than the amount of bytes given.
+Better performance will be achieved using \fB-o "-size +<bytes>c"\fR.
+.TP
+\fB\-n\fR
+do not execute the link command.
+.TP
+\fB\-o\fR \fB<opts>\fR
+pass an option string to the initially called find command. Be aware that the find command only applies directory arguments, not to standard input.  Since there are usually spaces enclosed be aware to set quotes right. Only the last given \fB-o\fR option will be used. This disables the internal tree-scanning and replaces it with a pipe. The option string is appended to \fBfind . -type f \fR. Use \fB-o -true\fR to enable the pipe instead of the internal routine.
+.TP
+\fB\-p\fR
+requires file permissions to be equal. Security issues may be assumed.  The author does not believe so, since the examined file is already present with the later permissions and linking only takes place with the same content (hash cheating will fail). On the other hand, this might be a way to propagate improper settings.
+.TP
+\fB\-P\fR \fB\<mask>\fR
+set the file permission mask that will be used during comparison of permissions. The mask needs to be given as and octal number. Default is to use 7777. When setting the mask \fB-p\fR is forced to on automatically.
+.TP
+\fB\-q\fR
+suppress any informational output (also that to stderr) except in case of severe errors.
+.TP
+\fB\-s\fR
+generate symbolic links although some given paths are given without a leading slash. This might lead to broken links since it works well from the current directory but unlikely in all hierarchies. This only affects symbolic links, since the inode numbers of hard links are unique within each file system.
+.TP
+\fB\-t\fR \fB<type>\fR
+selects the hash method that will be used. Valid choices are sha512, sha384, sha256, sha224, sha1, md5, sum. If the type is incomplete the first matching type will be chosen automatically. If this option is not used and an internal hash method is compiled into the program, this will be used. Warnings and error messages are only available when running with \fB-v\fR.
+.TP
+\fB\-T\fR
+when replacing a file by a link, the modification time of that directory changes. If you want to keep the time stamp of the directory like it was before linking its file, then use this option. The access time is restored to the pre-linking value as well, but this might not last long when freedups continues to investigate the file tree.
+.TP
+\fB\-u\fR
+requires users of the files to be equal for linking. (see \fB-p\fR)
+.TP
+\fB\-V\fR
+show version and copyright.
+.TP
+\fB\-v\fR
+runs in verbose mode, i.e. it displays shell commands to perform linking.  In difference to the embedded commands, the displayed commands to not do establish the link before deleting the former file.
+.TP
+\fB\-w\fR
+Establish all links as weak symbolic links only. This alters the behaviour fundamentally. Please watch out when using this option in combination with \fB\-s\fR. In consequence files may be hard to retrieve from different working directories.
+.TP
+\fB\-x\fR \fB<style>\fR
+selects the comparison style that will be used. Valid choices are auto, mp3, mp4, mpc, ogg or jpg. If the type is incomplete the first matching type will be chosen automatically. If this option is used only the internal hash method can be used, no external one. Please be aware, that this disables full comparison of the files and can result in loss of information.
+.TP
+\fB\-#\fR \fB<num>\fR
+This option manages the way that hash sum evaluation influences the comparison algorithm.
+.RS
+.TP
+.B 0
+(zero) means not to use the hash sum at all.
+.TP
+.B 1
+(one) enables "classic" hash sum usage, i.e. to evaluate or retrieve hash sum before comparing two files. this mode is required for external hash functions.
+.TP
+.B 2
+(two) enables the new "on the fly" evaluation, which reduces the read overhead. [default since version 1.3-1]
+.TP
+.B other
+values are increased or lowered to match the above ones
+.TP
+.RE
+There is no way to disable that all files are compared byte-by-byte (only the extra mode limits this).
+.TP
+\fB\-0\fR
+Do not link files that do have no contents, i.e. file size is zero. This avoids large link clusters.
+.TP
+\fB\<dir>\fR
+any directory to scan for duplicate files recursively. The recursion is activated per default. Use \fB\-o\fR to restrict the search to the initial file system (\-xdev) or to a maximum tree depth (\-maxdepth).
+.PP
+Many Options (\fB\-cdfnpsuv\fR)  are implemented as toggle switches. All given options are processed before starting the program. The final state of each option applies.
+.PP
+\fB<dir>\fR trees given later are linked to the files found in earlier ones.  Since a sorting algorithm is applied, there is no use in adding one directory tree several times, except certain additional options for find are provided.
+.PP
+With no \fB<dir>\fR tree given, a list of files (NOT dirs!) will be read from standard input. This is useful in conjunction with 
+.BR locate(1L)
+and
+.BR find(1L).
+An example would be 
+.PP
+	find /usr/src -xdev -iname '*.h' -print | freedup -c
+.PP
+.SH CONFIG FILE
+.PP
+The config files will be read from (and written to) \fB$HOME/.freedup.cfg\fR. The environment name is enclosed in brackets and is valid until the next environment is started. There are no sections without environment names. The keys and values are separated by \fB=\fR signs that may be surrounded by white spaces. The key words match those the long option names without the leading minus signs. There are a few string options. Please note, that for them trailing spaces will be assigned to the variable, too. You may add one or more \fBdirectory\fR entries per environment only manually.
+.PP
+Config files can be generated automatically when using \fB-e\fR with an environment name that does not exist yet. All option settings will be stored using it this way. Directory trees or file lists are not stored. This may also be used to copy environments using freedup. As an example assume that the environment mp3 exists
+and the environment Music does not. When executing the following command
+.PP
+	freedup -e mp3 -in -e Music . somedir
+.PP
+the environment mp3 will be copied to Music with the interact and noaction options toggled.
+.PP
+Environments are read at the very position in the command line, i.e. it is likely that they override all command line settings that may have been made before. On the other hand, only settings that are present in the config file will be set, others are unchanged. If each environment has only a few option entries, you may use multiple environments to combine different settings. Please be aware that this is not recommended due to the resulting complexity.
+.PP
+Environments are written after all settings are complete, i.e. only the last environment name will survive. Hence, there is no use in specifying more than one non-existing environment on one command line. And non-existing environments should not be followed by existing ones if you want to store the current settings.
+.PP
+Here is an example of a config file:
+.PP
+.RS
+ [freedups]
+ samegroup=1
+ sameuser=1
+ sameperm=1
+ 
+ [fdupes]
+ interact=1
+ noaction=1
+ nonzero=1
+ 
+ [mymusic]
+ basedir=/home/freedup
+ findoptions=-iname '*3'
+ interact=1
+ noaction=1
+ nonzero=1
+ extra=1
+ directory=/home/freedup/test
+.RE
+.PP
+.SH OPERATING SYSTEMS
+freedup is developed in POSIX compliant C under Linux/AMD, and tested with Linux/Intel, Cygwin/WindowsXP, AIX 4.3.3 and AIX 5.3. The sources contain a full test suite to check for the correct execution. Beyond that tests, that you may easily verify, there is no warranty (or similar) that the program will behave as you or I expect it. Please try always to use the newest release from http://freedup.org/ and keep the author informed of severe bugs, since he uses the program frequently.
+.PP
+.SH "COLLATERAL"
+freedup concentrates on providing an interface to claim space by replacing
+files with links to those with identical content. However similar tools 
+provide additional services, which are easy to achieve by single command lines.
+.PP
+An \fBexcess mode\fR would list all files but one. Instead of providing
+one more option, you are kindly asked to use this command (with care):
+.PP
+	freedup -in . | awk '{if(NF!=0)print x;x=$0}' | xargs rm
+.PP
+Working with Windows there seem difficulties with retrieving linked files.
+In case you are looking for linked files you may want to use:
+.PP
+	find . -type f -noleaf -links +1 -printf "%n %i %f\t%h\n" | sort | less
+.PP
+Using \fB-type l\fR instead of \fB-links +1\fR with find allows to retrieve 
+symbolic links instead of hard links. Therefore you can replace symbolic links 
+by the file that is referenced by using:
+.PP
+	find test -type l -exec cp {} {}.tmp$$ \; -exec mv {}.tmp$$ {} \;
+.PP
+Assuming you checked the list of files you want to delete, this command completes the task
+.PP
+	find ./ -type f -empty -print0 | xargs -0 rm
+.PP
+With \fB-type d\fR you can delete empty directories instead.
+.PP
+.SH "REPORTING BUGS"
+Report bugs to <AN@freedup.org>.
+.SH COPYRIGHT
+Copyright \(co 2007 Andreas Neuper
+.br
+FreeDup is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+.br
+FreeDup is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.br
+You should have received a copy of the GNU General Public License
+along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+.SH FILES
+.PP
+$HOME/.freedup.cfg
+.PP
+.SH "SEE ALSO"
+.BR qsort(3)
+,
+.BR ln(1)
+,
+.BR find(1L)
+,
+.BR locate(1L)
+.
+.PP
+The best documentation for
+.B freedup
+is maintained within the source code.

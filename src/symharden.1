@@ -1,0 +1,64 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" (C) Copyright 2014 root <AN@freedup.org>,
+.\"
+.\" This file is part of FreeDup.
+.\" 
+.\"     FreeDup -- search for duplicate files in one or more directory hierarchies
+.\"     Copyright (C) 2007,2008 Andreas Neuper
+.\" 
+.\"     FreeDup is free software: you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation, either version 3 of the License, or
+.\"     (at your option) any later version.
+.\"
+.\"     FreeDup is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
+.\" 
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+.\" 
+.TH SymHarden "1" "September 2008" "freedup (fsutils)" "User Commands"
+.SH NAME
+symharden \- convert a symbolic link into a hardlink
+.SH SYNOPSIS
+.B symharden
+.RI [ SYMBOLIC LINK ] 
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+the given symbolic link will be replaced by a hard link to that very file, where the previous link pointed to.
+If unresolvable, symharden will fail. If you do not give a symbolic link, another error is shown.
+Do not link files that do have no contents, i.e. file size is zero. This avoids large link clusters.
+.TP
+.PP
+.SH OPERATING SYSTEMS
+symharden is developed in POSIX compliant C under Linux/AMD, and tested with Linux/Intel, RaspberryPi/armhl, Cygwin/WindowsXP, AIX 4.3.3 and AIX 5.3. Please try always to use the newest release from http://freedup.org/ and keep the author informed of severe bugs, since he uses the program frequently himself.
+.PP
+.SH "REPORTING BUGS"
+Report bugs to <AN@freedup.org>.
+.SH COPYRIGHT
+Copyright \(co 2007 Andreas Neuper
+.br
+FreeDup is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+.br
+FreeDup is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.br
+You should have received a copy of the GNU General Public License
+along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+.PP
+.SH "SEE ALSO"
+,
+.BR freedup(1)
+.
+.PP
+The best documentation for
+.B freedup
+is maintained within the source code.

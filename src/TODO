@@ -1,0 +1,26 @@
+BUGs:
+PRIO - DESCRIPTION
+  1  - clear ownership problem with Darwin (MAC OSX) platform
+  3  - in web interface hash selection routine fails, since selecthash() compares the command to be a valid result
+
+TODOs:
+PRIO - DESCRIPTION
+  1  - graphical web based user interface (full version with 2.0)
+  3  - extending rule based payload comparison to GIF, PNG, AVI, etc.
+
+STEPS:
+v2.0 - first working web interface (non-stabil enhancement)
+done	+ stability of command line interface not affected
+removed	+ installation routine, requiring xinetd or inetd to get freedup started
+done	+ single unmodified web template on GET request
+	+ non-interactive execution with display to web interface
+LATER - FURTHER ENHANCEMENTS
+	+ "environment" (stored parameter sets) support
+done	+ webpage streaming
+	+ parsing and parameter substitution
+done	+ standalone execution (without x/inetd) possible
+done	+ serving more than one base page
+	+ providing graphics/pictograms for better recognition (help welcome!)
+	+ more than one base design in distribution
+FUTURE- ENHANCED IMPROVEMENTS
+	+ providing a web interface for the interactive mode

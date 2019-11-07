@@ -1,0 +1,2 @@
+version=3
+http://www.freedup.org/freedup-(.+)\.(?:tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))

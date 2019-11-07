@@ -1,0 +1,482 @@
+#!/usr/bin/make -f 
+#!/usr/bin/make -f
+#
+# This file is part of FreeDup.
+#
+#    FreeDup -- search for duplicate files in one or more directory hierarchies
+#    Copyright (C) 2007,2008 Andreas Neuper
+#
+#    FreeDup is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Foobar is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# Linux specific definitions
+#
+FREEDUPEXE=//freedup
+SHATESTEXE=./sha1test
+ECHOE=echo -e
+MAKE=make
+TOUCH=/bin/touch
+#CC=gcc
+DEFS=-DFLAVOUR="\"d\"" -DHASHSUM=0
+#DEFS=-DFLAVOUR=""
+RPMBUILD=/usr/src/packages
+#
+# Uncritial definitions for testing
+#
+TUSR=bin
+TGRP=bin
+DCOL="\:"
+
+#!/usr/bin/make -f 
+#
+# Execute this file if you want to verify that freedup works correctly.
+# If the above path is incorrect execute it by calling "make -f Makefile.tests".
+#
+
+#
+# This file is part of FreeDup.
+#
+#    FreeDup -- search for duplicate files in one or more directory hierarchies
+#    Copyright (C) 2007,2008 Andreas Neuper
+#
+#    FreeDup is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Foobar is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with FreeDup.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+#
+# OS specific definitions
+#
+#the following two lines will most likely fail for non-GNU make
+#in this case please replace the lines by the contents of the included file
+
+#
+#
+# a long list of test routines follows
+# The intention is to verify that at least some basic functions work well (hopefully)
+#
+test:	 user_is_root test0 test1 test2 test3 test4 test5 test6 test7       test9 test10 test11
+alltest: user_is_root test0 test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11
+
+user_is_root:
+	@[ "$$(id -u)" -eq 0 ] || $(ECHOE) "\n\t\e[31mSome Tests may tail due to missing root privileges.\e[0m\n"
+
+test0:	$(FREEDUPEXE)
+	@mkdir -p te$(DCOL)st/te\'st/te\&st
+	@cp $(FREEDUPEXE) te$(DCOL)st/test\ 1
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/test\`2
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/te\&st/testå3
+	@$(ECHOE) "Test prepared:\t\tSame Size - Special Chars, no Hash\t\c"
+	@$(FREEDUPEXE) --hash 2 te$(DCOL)st >/dev/null 2>&1
+	@[ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/test\`2 ] && \
+	 [ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/te\&st/testå3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@mkdir -p te$(DCOL)st/te\'st/te\&st
+	@cp $(FREEDUPEXE) te$(DCOL)st/test\ 1
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/test\`2
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/te\&st/testå3
+	@$(ECHOE) "Test prepared:\t\tSame Size - Special Chars, Classic Hash\t\c"
+	@$(FREEDUPEXE) --hash 1 te$(DCOL)st >/dev/null 2>&1
+	@[ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/test\`2 ] && \
+	 [ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/te\&st/testå3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r te$(DCOL)st
+	@mkdir -p te$(DCOL)st/te\'st/te\&st
+	@cp $(FREEDUPEXE) te$(DCOL)st/test\ 1
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/test\`2
+	@cp $(FREEDUPEXE) te$(DCOL)st/te\'st/te\&st/testå3
+	@$(ECHOE) "Test prepared:\t\tSame Size - Special Chars, Advanced Hash\c"
+	@$(FREEDUPEXE) --hash 0 te$(DCOL)st >/dev/null 2>&1
+	@[ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/test\`2 ] && \
+	 [ te$(DCOL)st/test\ 1 -ef te$(DCOL)st/te\'st/te\&st/testå3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r te$(DCOL)st
+
+test1:	$(FREEDUPEXE)
+	@mkdir test
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test/test$$n ; done
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{print $$5}') if=/dev/zero of=test/test4 2>/dev/null
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{print $$5}') if=/dev/zero of=test/test5 2>/dev/null
+	@$(ECHOE) "Test prepared:\t\tSame Size - Different Content\t\t\c"
+	@$(FREEDUPEXE)      test >/dev/null 2>&1
+	@$(FREEDUPEXE) -# 2 test >/dev/null 2>&1
+	@[ test/test1 -ef test/test2 ] && \
+	 [ test/test2 -ef test/test3 ] && \
+	 [ test/test4 -ef test/test5 ] && \
+	 [ ! test/test1 -ef test/test5 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir test
+	@dd bs=1 count=128 if=$(FREEDUPEXE) of=test/test1 2>/dev/null
+	@dd bs=1 count=128 if=$(FREEDUPEXE) of=test/test2 skip=1 2>/dev/null
+	@dd bs=1 count=128 if=$(FREEDUPEXE) of=test/test3 2>/dev/null
+	@dd bs=1 count=127 if=$(FREEDUPEXE) of=test/test4 2>/dev/null
+	@ echo "">>test/test4
+	@dd bs=1 count=2100 if=$(FREEDUPEXE) of=test/test5 2>/dev/null
+	@ echo "1">>test/test5
+	@dd bs=1 count=2100 if=$(FREEDUPEXE) of=test/test6 2>/dev/null
+	@ echo "2">>test/test6
+	@$(ECHOE) "Test prepared:\t\tSame Size - Similar Content\t\t\c"
+	@$(FREEDUPEXE)    test >/dev/null 2>&1
+	@$(FREEDUPEXE) -# 2 test >/dev/null 2>&1
+	@[ ! test/test1 -ef test/test2 ] && \
+	 [ ! test/test2 -ef test/test3 ] && \
+	 [ ! test/test4 -ef test/test3 ] && \
+	 [   test/test1 -ef test/test3 ] && \
+	 [ ! test/test4 -ef test/test1 ] && \
+	 [ ! test/test4 -ef test/test2 ] && \
+	 [ ! test/test6 -ef test/test5 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+test2:	$(FREEDUPEXE)
+	@mkdir test
+	@cp $(FREEDUPEXE) test/test\ 1
+	@cp $(FREEDUPEXE) test/tes\ t\ 2
+	@cp $(FREEDUPEXE) test/t\ e\ s\ t\ 3
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{print $$5}') if=/dev/zero of=test/test\ 4 2>/dev/null
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{print $$5}') if=/dev/zero of=test/test\ 5 2>/dev/null
+	@$(ECHOE) "Test prepared:\t\tSame Size - Spaces in Names\t\t\c"
+	@$(FREEDUPEXE) test >/dev/null 2>&1
+	@[   test/test\ 1 -ef test/tes\ t\ 2 ] && \
+	 [   test/test\ 1 -ef test/t\ e\ s\ t\ 3 ] && \
+	 [   test/test\ 4 -ef test/test\ 5 ] && \
+	 [ ! test/test\ 1 -ef test/test\ 5 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+test3:	$(FREEDUPEXE)
+	@mkdir -p te\ st/te\ st/te\ st
+	@cp $(FREEDUPEXE) te\ st/test\ 1
+	@cp $(FREEDUPEXE) te\ st/te\ st/test\ 2
+	@cp $(FREEDUPEXE) te\ st/te\ st/te\ st/test\ 3
+	@$(ECHOE) "Test prepared:\t\tSame Size - Spaces in Dirs\t\t\c"
+	@$(FREEDUPEXE) te\ st >/dev/null 2>&1
+	@[ te\ st/test\ 1 -ef te\ st/te\ st/test\ 2 ] && \
+	 [ te\ st/test\ 1 -ef te\ st/te\ st/te\ st/test\ 3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r te\ st
+	@mkdir -p test/a/b/c/d
+	@for n in a a/b a/b/c ; do cp  $(FREEDUPEXE) test/$$n ; done
+	@$(TOUCH) -t 0101010101.01 test test/a test/a/b test/a/b/c test/a/b/c/d
+	@$(ECHOE) "Test prepared:\t\tSame File - Dir Modification Time\t\c"
+	@$(FREEDUPEXE) -T test >/dev/null 2>&1
+	@[ ! test/a -nt test/a/b ] && [ ! test/a -nt test ] && \
+	 [ ! test -nt test/a/b/c ] && [ ! test/a -nt test/a/b/c/d ] && \
+	 [ ! test/a -ot test/a/b ] && [ ! test/a -ot test ] && \
+	 [ ! test -ot test/a/b/c ] && [ ! test/a -ot test/a/b/c/d ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+test4:	$(FREEDUPEXE)
+	@mkdir test
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test/test$$n ; done
+	@for n in 4 7 8 C  ; do ln test/test1 test/test$$n ; done
+	@for n in 5 9 B    ; do ln test/test2 test/test$$n ; done
+	@for n in 6 A D E F; do ln test/test3 test/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tSame File - Link Clusters\t\t\c"
+	@$(FREEDUPEXE) test >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test/test? ; do  [ $$n -ef test/test1 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test
+	@mkdir test1 test2 test3
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test$$n/test$$n ; done
+	@for n in 4 7 8 C  ; do ln test1/test1 test1/test$$n ; done
+	@for n in 5 9 B    ; do ln test2/test2 test2/test$$n ; done
+	@for n in 6 A D E F; do ln test3/test3 test3/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tSame File - Link Cluster Priority\t\c"
+	@$(FREEDUPEXE) -k \# test2 test3 test1 >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test?/test? ; do  [ $$n -ef test2/test2 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test1 test2 test3
+	@mkdir test1 test2 test3
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test$$n/test$$n ; done
+	@for n in 4 7 8 C  ; do ln test1/test1 test1/test$$n ; done
+	@for n in 5 9 B    ; do ln test2/test2 test2/test$$n ; done
+	@for n in 6 A D E F; do ln test3/test3 test3/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tSame File - Link Cluster Size\t\t\c"
+	@$(FREEDUPEXE) -k @ test2 test3 test1 >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test?/test? ; do  [ $$n -ef test3/test3 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test1 test2 test3
+	@mkdir test1 test2 test3
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test$$n/test$$n ; done
+	@cp $(FREEDUPEXE) test1/test0
+	@$(TOUCH) -t $$(date "+%m%d%H00") test1/test0
+	@for n in 4 7 8 C  ; do ln test1/test1 test1/test$$n ; done
+	@for n in 5 9 B    ; do ln test2/test2 test2/test$$n ; done
+	@for n in 6 A D E F; do ln test3/test3 test3/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tSame File - Link Cluster Oldest\t\t\c"
+	@$(FREEDUPEXE) -k '<' test2 test3 test1 >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test?/test? ; do  [ $$n -ef test1/test0 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test1 test2 test3
+	@mkdir test1 test2 test3
+	@cp $(FREEDUPEXE) test1/test0
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test$$n/test$$n ; done
+	@for n in 4 7 8 C  ; do ln test1/test1 test1/test$$n ; done
+	@for n in 5 9 B    ; do ln test2/test2 test2/test$$n ; done
+	@for n in 6 A D E F; do ln test3/test3 test3/test$$n ; done
+	@sleep 1 ;$(TOUCH) test1/test0
+	@$(ECHOE) "Test prepared:\t\tSame File - Link Cluster Newest\t\t\c"
+	@$(FREEDUPEXE) -k '>' test2 test3 test1 >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test?/test? ; do  [ $$n -ef test1/test0 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test1 test2 test3
+
+test5:	$(FREEDUPEXE)
+	@mkdir test
+	@for n in 1 2 3 ; do cp $(FREEDUPEXE) test/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tSame File - Testing standard input\t\c"
+	@ls -1 test/test1 test/test2 test/test3 $(FREEDUPEXE) | $(FREEDUPEXE) >/dev/null 2>&1
+	@r="[32msuccessful[0m"; \
+	 for n in test/test? ; do  [ $$n -ef test/test1 ] || r="[31mfailed[0m" ; done ; echo $$r
+	@rm -r test
+	@mkdir test1 test2
+	@cp $(FREEDUPEXE) test1/test1
+	@cp $(FREEDUPEXE) test1/test2
+	@cp $(FREEDUPEXE) test2/test3
+	@cp $(FREEDUPEXE) test2/test1
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Trees\t\t\c"
+	@$(FREEDUPEXE) test1 test2 >/dev/null 2>&1
+	@[ test1/test1 -ef test1/test2 ] && \
+	 [ test1/test2 -ef test2/test3 ] && \
+	 [ test2/test1 -ef test2/test3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test1 test2
+
+test6:	user_is_root $(FREEDUPEXE)
+	@mkdir             test
+	@for n in 1 2 3 4 5 6 ; do cp $(FREEDUPEXE) test/test$$n ; done
+	@chmod 505     test/test2
+	@chmod +t      test/test3
+	@chown $(TUSR) test/test4
+	@chgrp $(TGRP) test/test5
+	@sleep                  1
+	@$(TOUCH)        test/test6
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Attributes\t\c"
+	@$(FREEDUPEXE) -pugd test >/dev/null 2>&1
+	@[ ! test/test1 -ef test/test2 ] && \
+	 [ ! test/test2 -ef test/test3 ] && \
+	 [ ! test/test3 -ef test/test4 ] && \
+	 [ ! test/test4 -ef test/test5 ] && \
+	 [ ! test/test5 -ef test/test6 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Permissions\t\c"
+	@$(FREEDUPEXE) -ugd test >/dev/null 2>&1
+	@[   test/test1 -ef test/test2 ] && \
+	 [   test/test2 -ef test/test3 ] && \
+	 [ ! test/test3 -ef test/test4 ] && \
+	 [ ! test/test4 -ef test/test5 ] && \
+	 [ ! test/test5 -ef test/test6 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Users\t\t\c"
+	@$(FREEDUPEXE) -gd test >/dev/null 2>&1
+	@[   test/test1 -ef test/test2 ] && \
+	 [   test/test2 -ef test/test3 ] && \
+	 [   test/test3 -ef test/test4 ] && \
+	 [ ! test/test4 -ef test/test5 ] && \
+	 [ ! test/test5 -ef test/test6 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Group\t\t\c"
+	@$(FREEDUPEXE) -d test >/dev/null 2>&1
+	@[   test/test1 -ef test/test2 ] && \
+	 [   test/test2 -ef test/test3 ] && \
+	 [   test/test3 -ef test/test4 ] && \
+	 [   test/test4 -ef test/test5 ] && \
+	 [ ! test/test5 -ef test/test6 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@$(ECHOE) "Test prepared:\t\tSame File - Different Modification Date\t\c"
+	@$(FREEDUPEXE) test >/dev/null 2>&1
+	@[   test/test1 -ef test/test2 ] && \
+	 [   test/test2 -ef test/test3 ] && \
+	 [   test/test3 -ef test/test4 ] && \
+	 [   test/test4 -ef test/test5 ] && \
+	 [   test/test5 -ef test/test6 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir             test
+	@for n in 1 2 3 4 5 ; do cp $(FREEDUPEXE) test/test$$n && $(TOUCH) -t 12121222 test/test$$n; done
+	@$(TOUCH) -t 12121212 test/test1
+	@$(ECHOE) "Test prepared:\t\tSame File - Modification after 10min \t\c"
+	@$(ECHOE) "test/test1\ntest/test2" | $(FREEDUPEXE) >/dev/null 2>&1
+	@$(ECHOE) "test/test1\ntest/test3" | $(FREEDUPEXE) -d >/dev/null 2>&1
+	@$(ECHOE) "test/test1\ntest/test4" | $(FREEDUPEXE) -D 500 >/dev/null 2>&1
+	@$(ECHOE) "test/test1\ntest/test5" | $(FREEDUPEXE) -D 660 >/dev/null 2>&1
+	@[   test/test1 -ef test/test2 ] && \
+	 [ ! test/test1 -ef test/test3 ] && \
+	 [ ! test/test1 -ef test/test4 ] && \
+	 [   test/test1 -ef test/test5 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir -p test/test/test/test/test
+	@for n in 1 /test2 /test/test3 /test/test/test4 /test/test/test/test5; do cp $(FREEDUPEXE) test/test$$n ;done
+	@$(ECHOE) "Test prepared:\t\tSame File - Symbolic Links\t\t\c"
+	@$(ECHOE) "test/test/test/test3\ntest/test/test2\ntest/test1\ntest/test/test/test/test4\ntest/test/test/test/test/test5" | $(FREEDUPEXE) -w >/dev/null 2>&1
+	@target=$$(find test -type f); result="[32msuccessful[0m"; \
+	 for n in test/test1 test/test/test2 test/test/test/test3 \
+		test/test/test/test/test4 test/test/test/test/test/test5;\
+	 do if [ ! $$target = $$n ] ; then \
+	    if [ ! -f $$(dirname $$n)/$$(ls -l $$n|cut -d'>' -f2|cut -d' ' -f2) ] ; \
+	    then result="[31mfailed[0m"; fi ; fi ; done ; echo $$result
+	@rm -r test
+	@mkdir -p test/test/test/test/test
+	@mkdir -p tset/test/test/test/test
+	@for n in test/test1 test/test/test2 test/test/test/test3 test/test/test/test/test4 test/test/test/test/test/test5 tset/test1 tset/test/test2 tset/test/test/test3 tset/test/test/test/test4 tset/test/test/test/test/test5; do cp $(FREEDUPEXE)  $$n ;done
+	@$(ECHOE) "Test prepared:\t\tSame File - More Symbolic Links\t\t\c"
+	@$(FREEDUPEXE) -w test `pwd`/tset >/dev/null 2>&1
+	@target=$$(find test -type f); result="[32msuccessful[0m"; \
+	 for n in test/test1 test/test/test2 test/test/test/test3 \
+	 	  tset/test1 tset/test/test2 tset/test/test/test3 \
+	 test/test/test/test/test4 test/test/test/test/test/test5 \
+	 tset/test/test/test/test4 tset/test/test/test/test/test5 ;\
+	 do if [ ! $$target = $$n ] ; then \
+	    if [ ! -f $$(dirname $$n)/$$(ls -l $$n|cut -d'>' -f2|cut -d' ' -f2) -a ! -f $$n ] ; \
+	    then result="[31mfailed[0m"; echo $$n ;fi ; fi ; done ; echo $$result
+	@rm -r test tset
+
+test7:	$(FREEDUPEXE)
+	@mkdir test
+	@cp $(FREEDUPEXE) test/test1
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{printf"%1.0f\n",$$5/2+0}') if=$(FREEDUPEXE) of=test/test2 2>/dev/null
+	@dd bs=1 count=$$(/bin/ls -l $(FREEDUPEXE) | awk '{printf"%1.0f\n",$$5/3+0}') if=$(FREEDUPEXE) of=test/test3 2>/dev/null
+	@chmod 5777 test/test?
+	@$(ECHOE) "Test prepared:\t\tSame Content - Different Size\t\t\c"
+	@$(FREEDUPEXE)      test >/dev/null 2>&1
+	@$(FREEDUPEXE) -# 2 test >/dev/null 2>&1
+	@[ ! test/test1 -ef test/test2 ] && \
+	 [ ! test/test2 -ef test/test3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+test8:	$(FREEDUPEXE)
+	@if [ $$(df .|tail -1|awk '{print $$4}') -lt 4198400 ];then echo "Test lacks file space ... skipping";exit;fi
+	@mkdir test
+	@$(ECHOE) "Test is being prepared:\t\t\t\t\t please be patient\t\t"
+	@dd if=/dev/zero bs=2050 count=1048576 of=test/test1 2>/dev/null
+	@date >>test/test1
+	@cp test/test1 test/test2
+	@$(ECHOE) "Test prepared:\t\tBig Size - More than 2GB\t\t\c"
+	@$(FREEDUPEXE) test >/dev/null 2>&1
+	@[ test/test1 -ef test/test2 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+test9:	$(FREEDUPEXE)
+	@mkdir test9
+	@$(TOUCH) test9/a test9/b test9/c test9/d
+	@cp $(FREEDUPEXE) test9/x
+	@cp $(FREEDUPEXE) test9/y
+	@$(ECHOE) "Test prepared:\t\tEmpty Files - only link non-empty ones\t\c"
+	@$(FREEDUPEXE) -0 test9 >/dev/null 2>&1
+	@[ ! test9/a -ef test9/b ] && \
+	 [ ! test9/a -ef test9/c ] && \
+	 [ ! test9/a -ef test9/d ] && \
+	 [ ! test9/b -ef test9/c ] && \
+	 [ ! test9/b -ef test9/d ] && \
+	 [ ! test9/c -ef test9/d ] && \
+	 [   test9/x -ef test9/y ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test9/y
+	@cp $(FREEDUPEXE) test9/y
+	@$(ECHOE) "Test prepared:\t\tEmpty Files - also link empty ones\t\c"
+	@$(FREEDUPEXE) test9 >/dev/null 2>&1
+	@[ test9/a -ef test9/b ] && \
+	 [ test9/a -ef test9/c ] && \
+	 [ test9/a -ef test9/d ] && \
+	 [ test9/x -ef test9/y ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test9
+
+test10:	$(FREEDUPEXE)
+	@mkdir test
+	@for n in 1 2 3 4 ; do cp $(FREEDUPEXE) test/test$$n ; done
+	@$(ECHOE) "Test prepared:\t\tInteractive Mode - Link & Delete\t\c"
+	@eval $$(echo "13ac" | $(FREEDUPEXE) -i test 2>/dev/null | sed -n 's:^ \(.\).*\] :var\1=:p' ) ;\
+	 [ $$var0 -ef $$var2 ] && [ ! -f $$var1 ] && [ ! -f $$var3 ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
+
+test11:	$(FREEDUPEXE)
+	@mkdir test
+	@cp demo/mp3/base.mp3 test/
+	@cp demo/mp3/head.mp3 test/
+	@cp demo/mp3/tail.mp3 test/
+	@cp demo/mp3/both.mp3 test/
+	@$(ECHOE) "Test prepared:\t\tExtra Style Mode - MP2 & MP3 Tag skip\t\c"
+	@usual=$$($(FREEDUPEXE) -niq test 2>&1 | wc -l) ;\
+	 nhash=$$($(FREEDUPEXE) -niq -# 2 test 2>&1 | wc -l) ;\
+	 style=$$($(FREEDUPEXE) -niq -x mp3 test 2>&1 | wc -l) ;\
+	 nstyl=$$($(FREEDUPEXE) -niq -# 2 -x mp3 test 2>&1 | wc -l) ;\
+	 [ $$(expr $$usual + 5) -eq $$style ] && \
+	 [ $$usual -eq $$nhash ] && \
+	 [ $$style -eq $$nstyl ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir test
+	@cp demo/mp4/base.m4a test/
+	@cp demo/mp4/utf8.m4a test/
+	@$(ECHOE) "Test prepared:\t\tExtra Style Mode - MP4 mdat exposure\t\c"
+	@usual=$$($(FREEDUPEXE) -niq test 2>&1 | wc -l) ;\
+	 nhash=$$($(FREEDUPEXE) -niq -# 2 test 2>&1 | wc -l) ;\
+	 style=$$($(FREEDUPEXE) -niq -x mp4 test 2>&1 | wc -l) ;\
+	 nstyl=$$($(FREEDUPEXE) -niq -# 2 -x mp4 test 2>&1 | wc -l) ;\
+	 [ $$(expr $$usual + 3) -eq $$style ] && \
+	 [ $$usual -eq $$nhash ] && \
+	 [ $$style -eq $$nstyl ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir test
+	@cp demo/jpg/base.jpg test/
+	@cp demo/jpg/head.jpg test/
+	@$(ECHOE) "Test prepared:\t\tExtra Style Mode - JPEG Header skip\t\c"
+	@usual=$$($(FREEDUPEXE) -niq test 2>&1 | wc -l) ;\
+	 nhash=$$($(FREEDUPEXE) -niq -# 2 test 2>&1 | wc -l) ;\
+	 style=$$($(FREEDUPEXE) -niq -x jpg test 2>&1 | wc -l) ;\
+	 nstyl=$$($(FREEDUPEXE) -niq -# 2 -x jpg test 2>&1 | wc -l) ;\
+	 [ $$(expr $$usual + 3) -eq $$style ] && \
+	 [ $$usual -eq $$nhash ] && \
+	 [ $$style -eq $$nstyl ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+	@mkdir test
+	@cp demo/jpg/base.jpg test/
+	@cp demo/jpg/head.jpg test/
+	@cp demo/mp3/base.mp3 test/
+	@cp demo/mp3/head.mp3 test/
+	@cp demo/mp3/tail.mp3 test/
+	@cp demo/mp3/both.mp3 test/
+	@$(ECHOE) "Test prepared:\t\tExtra Style Mode - JPEG & MP3 Mix\t\c"
+	@usual=$$($(FREEDUPEXE) -n test 2>&1 | grep 'will be replaced' | cut -d' '  -f1) ;\
+	 nhash=$$($(FREEDUPEXE) -n -# 1 test 2>&1 | grep 'will be replaced' | cut -d' '  -f1) ;\
+	 style=$$($(FREEDUPEXE) -n -x auto test 2>&1 1>/dev/null | grep 'will be replaced' | cut -d' '  -f1) ;\
+	 nstyl=$$($(FREEDUPEXE) -n -# 2 -x auto test 2>&1 1>/dev/null | grep 'will be replaced' | cut -d' ' -f1) ;\
+	 [ $$(expr $$usual + 4) -eq $$style ] && \
+	 [ $$usual -eq $$nhash ] && \
+	 [ $$style -eq $$nstyl ] && \
+	 echo "[32msuccessful[0m" || echo "[31mfailed[0m"
+	@rm -r test
+
